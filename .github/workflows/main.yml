@@ -20,7 +20,6 @@ jobs:
           git clone https://github.com/munjeni/anyxperia_dumper.git
           cd anyxperia_dumper
           gcc -Wall -O2 -Iinclude -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE=1 lz4.c unpackbootimg.c untar.c sony_dump.c -o sony_dump -lz
-          ls -lh sony_dump
 
       - name: Download from Google Drive
         run: |
@@ -29,12 +28,13 @@ jobs:
           gdown "https://drive.google.com/uc?id=1taYhiLyL1G9Zt-jBRWniQqmxH2FogQEy" -O firmware.zip
           ls -lh
 
-      - name: Extract ZIP + FTF
+      - name: Extract ZIP - langsung SIN
         run: |
           cd firmware
           unzip -o firmware.zip
           ls -lh
-          unzip -o *.ftf -d sin_files
+          mkdir -p sin_files
+          find . -name "*.sin" -exec cp {} sin_files/ \;
           ls -lh sin_files/
 
       - name: Extract SIN to IMG
