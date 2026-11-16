@@ -26,7 +26,7 @@ jobs:
         run: |
           mkdir -p firmware
           cd firmware
-          gdown --id 1taYhiLyL1G9Zt-jBRWniQqmxH2FogQEy -O firmware.zip
+          gdown "https://drive.google.com/uc?id=1taYhiLyL1G9Zt-jBRWniQqmxH2FogQEy" -O firmware.zip
           ls -lh
 
       - name: Extract ZIP + FTF
