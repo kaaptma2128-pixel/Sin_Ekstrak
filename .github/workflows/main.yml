@@ -1,0 +1,52 @@
+name: Extract Sony SIN - Drive
+
+on:
+  workflow_dispatch:
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip p7zip-full python3-pip
+          pip install gdown --break-system-packages
+
+      - name: Clone sony_dump
+        run: |
+          git clone https://github.com/munjeni/anyxperia_dumper.git
+          cd anyxperia_dumper
+          gcc -Wall -O2 -Iinclude -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE=1 lz4.c unpackbootimg.c untar.c sony_dump.c -o sony_dump -lz
+          ls -lh sony_dump
+
+      - name: Download from Google Drive
+        run: |
+          mkdir -p firmware
+          cd firmware
+          gdown --id 1taYhiLyL1G9Zt-jBRWniQqmxH2FogQEy -O firmware.zip
+          ls -lh
+
+      - name: Extract ZIP + FTF
+        run: |
+          cd firmware
+          unzip -o firmware.zip
+          ls -lh
+          unzip -o *.ftf -d sin_files
+          ls -lh sin_files/
+
+      - name: Extract SIN to IMG
+        run: |
+          mkdir -p hasil_img
+          cd anyxperia_dumper
+          for f in ../firmware/sin_files/*.sin; do ./sony_dump ../hasil_img "$f"; done
+          ls -lh ../hasil_img/
+
+      - name: Upload IMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: hasil_img_G3116
+          path: hasil_img/
+          compression-level: 0
