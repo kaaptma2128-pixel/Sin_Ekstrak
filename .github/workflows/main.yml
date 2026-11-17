@@ -20,7 +20,6 @@ jobs:
           git clone https://github.com/munjeni/anyxperia_dumper.git
           cd anyxperia_dumper
           gcc -Wall -O2 -Iinclude -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE=1 lz4.c unpackbootimg.c untar.c sony_dump.c -o sony_dump -lz
-          ls -lh sony_dump
 
       - name: Download from Google Drive
         run: |
@@ -33,37 +32,18 @@ jobs:
         run: |
           cd firmware
           unzip -o firmware.zip
-          echo "=== ISI ZIP ==="
-          ls -lh
           mkdir -p sin_files
           find . -name "*.sin" -exec cp {} sin_files/ \;
-          echo "=== SIN_FILES ==="
           ls -lh sin_files/
 
-      - name: Extract SIN to IMG - sony_dump lama
+      - name: Extract SIN to IMG
         run: |
           mkdir -p hasil_img
           cd anyxperia_dumper
           set +e
           for f in ../firmware/sin_files/*.sin; do
-            echo "=== sony_dump $f ==="
+            echo "=== $f ==="
             ./sony_dump ../hasil_img "$f" || echo "SKIP GAGAL: $f"
-          done
-          echo "=== HASIL SONY_DUMP ==="
-          ls -lh ../hasil_img/
-          exit 0
-
-      - name: Extract SIN v5 - unsin
-        run: |
-          git clone https://github.com/sonyxperiadev/unsin.git
-          cd unsin
-          gcc -o unsin unsin.c -lz
-          ls -lh unsin
-          mkdir -p ../hasil_img
-          set +e
-          for f in ../firmware/sin_files/*.sin; do
-            echo "=== unsin $f ==="
-            ./unsin -d ../hasil_img "$f" || echo "SKIP: $f"
           done
           echo "=== HASIL AKHIR ==="
           ls -lh ../hasil_img/
